@@ -2,12 +2,12 @@ package com.university.controller;
 
 //S20421
 
+import com.university.dao.RegistrationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class CourseController {
@@ -15,7 +15,10 @@ public class CourseController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @RequestMapping("/courses")
+    @Autowired
+    private RegistrationDao registrationDao;
+
+    @GetMapping("/courses")
     public String listCourses(Model model) {
         String sql = "SELECT * FROM courses";
         model.addAttribute("courses", jdbcTemplate.queryForList(sql));
@@ -23,10 +26,8 @@ public class CourseController {
     }
 
     @PostMapping("/register/{courseId}")
-    public String registerCourse(int studentId, int courseId) {
-        String sql = "INSERT INTO registrations (student_id, course_id) VALUES (?, ?)";
-        jdbcTemplate.update(sql, studentId, courseId);
+    public String registerCourse(@PathVariable int courseId, @RequestParam int studentId) {
+        registrationDao.registerStudentToCourse(studentId, courseId);
         return "redirect:/success";
     }
 }
-
