@@ -1,5 +1,6 @@
 package com.university.model;
 
+//S20421
 public class Course {
     private int courseId;
     private String name;
