@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ public class CourseController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HttpSession session;
 
     @GetMapping("/courses")
     public ModelAndView getCourses() {
@@ -26,7 +30,10 @@ public class CourseController {
 
     @PostMapping("/register/{courseId}")
     public String registerCourse(@PathVariable("courseId") int courseId) {
-        int studentId = 1;
+        Integer studentId = (Integer) session.getAttribute("studentId");
+        if (studentId == null) {
+            return "redirect:/login";
+        }
         String sql = "INSERT INTO registrations (student_id, course_id, date) VALUES (?, ?, NOW())";
         jdbcTemplate.update(sql, studentId, courseId);
         return "redirect:/success";
